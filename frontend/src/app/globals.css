@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #0a0d12;
+  color: #d9dfe8;
+}
+
+body {
+  font-feature-settings: "tnum" 1, "cv11" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a3341 transparent;
+}
+
+::selection {
+  background: rgba(56, 189, 248, 0.3);
+}
+
+@layer components {
+  .panel {
+    @apply rounded-md border border-soc-line bg-soc-panel;
+  }
+  .label {
+    @apply text-[10.5px] font-medium uppercase tracking-[0.08em] text-soc-faint;
+  }
+  .input {
+    @apply h-8 rounded border border-soc-line bg-soc-bg px-2.5 text-[12.5px] text-soc-text outline-none transition-colors placeholder:text-soc-faint focus:border-soc-accent/60 focus:ring-1 focus:ring-soc-accent/30;
+  }
+  .btn {
+    @apply inline-flex h-8 items-center gap-1.5 rounded border border-soc-line bg-soc-raised px-3 text-[12.5px] font-medium text-soc-text transition-all hover:border-soc-lineStrong hover:bg-[#1b2230] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply border-soc-accent/50 bg-soc-accent/15 text-soc-accent hover:border-soc-accent hover:bg-soc-accent/25;
+  }
+  .btn-danger {
+    @apply border-soc-danger/50 bg-soc-danger/10 text-soc-danger hover:border-soc-danger hover:bg-soc-danger/20;
+  }
+  .table-row {
+    @apply border-b border-soc-line/70 transition-colors hover:bg-soc-raised/70;
+  }
+  .mono {
+    @apply font-mono text-[12px];
+  }
+}
