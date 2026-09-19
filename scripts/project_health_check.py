@@ -62,13 +62,13 @@ REQUIRED_FILES = [
     "docs/research_gap.md",
     "docs/experiment_plan.md",
     "requirements-base.txt",
+    "requirements-gnn.txt",
     "scripts/package_check.py",
 ]
 
-FORBIDDEN_MODULES = [
-    ("torch", "PyTorch"),
-    ("torch_geometric", "PyTorch Geometric"),
-]
+#: The GNN stack pinned since M4.3. Until then these packages were deliberately
+#: absent and this script asserted so; it now asserts the pinned versions.
+GNN_REQUIREMENTS_FILE = PROJECT_ROOT / "requirements-gnn.txt"
 
 LINE = "=" * 64
 
@@ -147,12 +147,28 @@ def check_files(results):
                     "all present" if not docs_missing else "MISSING: " + ", ".join(docs_missing)))
 
 
-def check_forbidden_modules(results):
-    for module_name, label in FORBIDDEN_MODULES:
-        spec = importlib.util.find_spec(module_name)
-        absent = spec is None
-        results.append((f"{label} not installed", absent,
-                        "absent (expected)" if absent else f"FOUND at {spec.origin}"))
+def check_gnn_packages(results):
+    if not GNN_REQUIREMENTS_FILE.is_file():
+        results.append(("GNN requirements", False, "requirements-gnn.txt MISSING"))
+        return
+    pins = {}
+    for raw in GNN_REQUIREMENTS_FILE.read_text(encoding="utf-8").splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if "==" in line:
+            name, version = line.split("==", 1)
+            pins[name.strip()] = version.strip()
+    if not pins:
+        results.append(("GNN requirements", False, "no pinned packages found"))
+        return
+    for dist_name, pinned in pins.items():
+        try:
+            importlib.import_module(dist_name.replace("-", "_"))
+            found = importlib.metadata.version(dist_name)
+            ok = found == pinned
+            detail = f"pinned={pinned} found={found}"
+        except Exception as exc:
+            ok, detail = False, f"{type(exc).__name__}: {exc}"
+        results.append((f"{dist_name} installed (GNN stack)", ok, detail))
 
 
 def main():
@@ -172,7 +188,7 @@ def main():
     check_foundational_packages(results)
     check_directories(results)
     check_files(results)
-    check_forbidden_modules(results)
+    check_gnn_packages(results)
 
     print()
     for name, ok, detail in results:

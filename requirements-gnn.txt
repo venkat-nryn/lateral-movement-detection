@@ -1,0 +1,9 @@
+# Graph neural network dependencies (Module M4.3)
+# Install AFTER requirements-base.txt:
+#   python -m pip install -r requirements-gnn.txt --extra-index-url https://download.pytorch.org/whl/cu124
+#
+# torch 2.6.0+cu124 is the CUDA build used on the development machine
+# (Python 3.10, Windows, RTX 2050 / sm_86, 4 GB VRAM, driver 581.80).
+# For a CPU-only environment drop the +cu124 local version and the index URL.
+torch==2.6.0+cu124
+torch_geometric==2.6.1
